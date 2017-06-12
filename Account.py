@@ -11,6 +11,8 @@ class Account:
     def __init__(self):
         self.username = username
         self.pwd = pwd
+        self.ck_pc = ''
+        self.session = requests.session()
 
     def login_pc(self):
 
@@ -30,9 +32,6 @@ class Account:
             url = 'http://' + re.findall('src2="//(.*?)"', html, re.S)[0].replace('amp;', '')
             ir = t.get(url, headers=headers)
             path_str = r'd:\Project\JDAssistant\authcode.jpg'
-            # fp = open(path_str, 'wb')
-            # fp.write(ir.content)
-            # fp.close()
             save_img(path_str, ir)
             authcode = input("Enter the authcode to continue : ")
         else:
@@ -56,7 +55,18 @@ class Account:
         else:
             print(post_data)
             raise Exception('Login Failed！')
+        cookiestr = ''
+        for k, value in t.cookies.items():
+            cookiestr = cookiestr + k + '=' + value + ';'
+        self.ck_pc = cookiestr[:-1]
+        return self.ck_pc
 
+    def get_payment(self):
+        payment_list = []
+        headers = {'cookie': self.ck_pc}
+        html = self.session.get('http://order.jd.com/center/list.action', headers=headers, verify=False).text
+        print(html)
 
 account = Account()
 account.login_pc()
+account.get_payment()
