@@ -67,6 +67,11 @@ class Account:
         html = self.session.get('http://order.jd.com/center/list.action', headers=headers, verify=False).text
         print(html)
 
+    def get_coupon_list(self):
+        headers = {'cookie': self.ck_pc}
+        html = self.session.get('https://a.jd.com/#none', headers=headers, verify=False).text
+        print(html)
+
 account = Account()
 account.login_pc()
-account.get_payment()
+account.get_coupon_list()
