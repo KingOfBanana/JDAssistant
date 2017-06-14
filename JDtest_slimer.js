@@ -8,7 +8,8 @@ fs.makeTree('contents');
 page.captureContent = [ /.*/ ];
 
 page.onResourceReceived = function(response) {
-console.log('Response (#' + response.id + ', stage "' + response.stage + '"): ' + JSON.stringify(response));
+	// if(response.id === 1)
+	console.log('Response (#' + response.id + ', stage "' + response.stage + '"): ' + JSON.stringify(response));
 
 // if(response.stage!="end" || !response.bodySize)return;
 
