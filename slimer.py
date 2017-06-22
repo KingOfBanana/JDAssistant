@@ -19,6 +19,9 @@ output = instance.stdout
 output = str(output, encoding = "utf-8")
 # print(output)
 try:
+	# print(camel_to_underline('favNum'))
+
+
 	match_rule = re.compile('https://a.jd.com/indexAjax/getCouponListByCatalogId.html.*\"body\":\"jQuery\d+.(.*).","httpVersion')
 	match_str = re.findall(match_rule, output)
 
@@ -26,37 +29,42 @@ try:
 
 	json_dict = json.loads(match_str)
 	coupon_list = json_dict['couponList']
-	# conn = pymysql.connect(user = mysql_user, password = mysql_password, host = mysql_localhost, db = mysql_JDA_db, charset = mysql_charset)
-	# insert_cursor = conn.cursor()
-
-	# sqli="insert into student values(%s,%s,%s,%s)"
-	# cur.executemany(sqli,[
-	#     ('3','Tom','1 year 1 class','6'),
-	#     ('3','Jack','2 year 1 class','7'),
-	#     ('3','Yaheng','2 year 2 class','7'),
-	#     ])
-
-
-	# insert_cursor.execute('insert into jd_coupon(id) values (%s)' , json_dict["resultCode"])
-	# conn.commit()
-	# insert_cursor.close()
-	field_list = []
-	value_list = []
+	
+	field_type = []
+	field_key = []
+	field_value = []
 	flag = 0;
+	count = 0;
 	for coupon in coupon_list:
-		coupon_value_list = []
+		coupon_value = []
 		for k, v in coupon.items():
 			if flag == 0:
-				field_list.append(k)
-			value_list = 
+				field_key.append(camel_to_underline(k))
+				field_type.append('%%s')
+			coupon_value.append(v)		
+		coupon_value = tuple(coupon_value)
 		if flag == 0:
 			flag = 1
-		fields_tuple = tuple(field_list)
-	print(str(fields_tuple))
+			field_key = tuple(field_key)
+		# field_key.sort()
+		field_value.append(coupon_value)
 
+	field_key = re.sub(r'\'','',str(field_key))
+	field_key = re.sub(' position,', ' coupon_position,',field_key)
+	field_key = re.sub(' key,', ' coupon_key,',field_key)
+	field_type = str(tuple(field_type))
+	print(field_value)
+	print(field_key)
+	sql = 'insert into jd_coupon' + field_key + 'values' + "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+	conn = pymysql.connect(user = mysql_user, password = mysql_password, host = mysql_localhost, db = mysql_JDA_db, charset = mysql_charset)
+	insert_cursor = conn.cursor()
+
+	insert_cursor.executemany(sql, field_value)
+	
+	conn.commit()
+	insert_cursor.close()
+
+	print(field_key)
 
 except:
 	print(e)
-print(coupon_list[0])
-# str = popen('cmd')
-# print(str.read()[1])
